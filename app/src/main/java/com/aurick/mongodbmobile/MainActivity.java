@@ -1,54 +1,91 @@
 package com.aurick.mongodbmobile;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.aurick.mongodbmobile.model.User;
 import com.aurick.mongodbmobile.service.UserService;
-import com.aurick.mongodbmobile.utils.JacksonUtils;
-import com.fasterxml.jackson.core.type.TypeReference;
-
-import org.bson.Document;
+import com.aurick.mongodbmobile.service.internal.UserServiceImpl;
+import com.aurick.mongodbmobile.utils.GsonUtils;
+import com.mongodb.client.result.DeleteResult;
+import com.mongodb.client.result.UpdateResult;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final String TAG = "MainActivity";
+
+    private UserService userService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        final Button button = findViewById(R.id.button);
+        button.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                Log.e(TAG, "Button Click");
+                runTest();
+            }
+        });
+
+        new Thread() {
+            @Override
+            public void run() {
+                Log.e(TAG, "Initializing Service");
+                userService = UserServiceImpl.getInstance();
+                Log.e(TAG, "Service Initialized");
+            }
+        }.start();
+
+        /*new java.util.Timer().schedule(
+                new java.util.TimerTask() {
+                    @Override
+                    public void run() {
+                        Log.e(TAG, "Initializing Service");
+                        userService = UserService.getInstance();
+                        Log.e(TAG, "Service Initialized");
+                    }
+                },
+                500
+        );*/
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+    }
 
-        UserService userService = UserService.getInstance();
+    private void runTest() {
+        userService.createUser();
 
-//        userService.createUser();
+        User userById = userService.findUserById("5e9c73db2a86281d78b666ca");
+        Log.e("@userById", GsonUtils.toJson(userById));
 
-        // Find the first document
-        /*User user = userService.findUserById("5ca3ab76e6a59d6f5d038fc8");
-        Log.e("@Aurick", JacksonUtils.toJson(user));
-        Log.e("@Aurick user: ", user.getId());*/
-
-
-        //Find all documents that match the find criteria
-        ArrayList<Document> results = userService.findUsersByName("Aurick");
-        for (Document user1 : results) {
-            Log.e("@user1", user1.toJson());
+        if (userById != null) {
+            userById.setName("Aurick Islam");
+            UpdateResult updateResult = userService.updateUser(userById);
+            Log.e("@updateResult", String.valueOf(updateResult.getMatchedCount()));
+            Log.e("@updateResult", String.valueOf(updateResult.wasAcknowledged()));
+            Log.e("@updateResult", String.valueOf(updateResult.getModifiedCount()));
         }
 
+        ArrayList<User> usersByName = userService.findUsersByName("Aurick Islam");
+        Log.e("@usersByName", GsonUtils.toJson(usersByName));
 
-        /*ArrayList<User> users = JacksonUtils.fromJson(JacksonUtils.toJson(results), new TypeReference<ArrayList<User>>(){});
+        DeleteResult deleteResult = userService.deleteUser("5e9c7468e3a34247f459f5e0");
+        Log.e("@deleteResult", String.valueOf(deleteResult.getDeletedCount()));
+        Log.e("@deleteResult", String.valueOf(deleteResult.wasAcknowledged()));
 
-        Log.e("@Aurick", "onCreate: results: " + users.toString());
-
-        for (User user1 : users) {
-            Log.e("@user1", user1.getId());
-        }*/
+        ArrayList<User> users = userService.getUsers();
+        Log.e("@users", GsonUtils.toJson(users));
     }
 }

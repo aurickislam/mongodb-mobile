@@ -1,15 +1,15 @@
 package com.aurick.mongodbmobile.model;
 
-import org.jongo.marshall.jackson.oid.Id;
-import org.jongo.marshall.jackson.oid.ObjectId;
+import com.google.gson.annotations.SerializedName;
+
+import org.bson.types.ObjectId;
 
 import java.io.Serializable;
 
 public class User implements Serializable {
 
-    @Id
-    @ObjectId
-    private String id;
+    @SerializedName("_id")
+    private ObjectId id;
 
     private String name;
 
@@ -41,11 +41,11 @@ public class User implements Serializable {
         this.email = email;
     }
 
-    public String getId() {
+    public ObjectId getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(ObjectId id) {
         this.id = id;
     }
 }

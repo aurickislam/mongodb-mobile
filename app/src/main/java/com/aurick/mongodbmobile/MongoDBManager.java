@@ -2,7 +2,6 @@ package com.aurick.mongodbmobile;
 
 import android.util.Log;
 
-import com.aurick.mongodbmobile.service.UserService;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -14,22 +13,22 @@ import org.bson.Document;
 
 public class MongoDBManager {
 
+    private static final String TAG = "MongoDBManager";
+
     private static MongoDatabase mongoDatabase = null;
 
     private MongoDBManager() {
     }
 
     private static MongoDatabase getDatabase() {
-        Log.e("@Aurick", "MongoDatabase getDatabase");
+        Log.e(TAG, "getDatabase");
 
         if (mongoDatabase == null) {
             synchronized (MongoDBManager.class) {
                 if (mongoDatabase == null) {
-                    StitchAppClient client = Stitch.initializeDefaultAppClient(BuildConfig.APPLICATION_ID);
-
-                    MongoClient mongoClient = client.getServiceClient(LocalMongoDbService.clientFactory);
-
-                    mongoDatabase = mongoClient.getDatabase("my_db");
+                    final StitchAppClient client = Stitch.initializeDefaultAppClient(BuildConfig.APPLICATION_ID);
+                    final MongoClient mongoClient = client.getServiceClient(LocalMongoDbService.clientFactory);
+                    mongoDatabase = mongoClient.getDatabase("aurickdb");
                 }
             }
         }
@@ -37,8 +36,7 @@ public class MongoDBManager {
     }
 
     public static MongoCollection<Document> getCollection(String collectionName) {
-        Log.e("@Aurick", "MongoDatabase getCollection");
-
+        Log.e(TAG, "getCollection");
         return getDatabase().getCollection(collectionName);
     }
 
