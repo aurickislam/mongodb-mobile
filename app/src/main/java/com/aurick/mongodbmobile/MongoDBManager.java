@@ -40,4 +40,11 @@ public class MongoDBManager {
         return getDatabase().getCollection(collectionName);
     }
 
+    // org.bson.codecs.configuration.CodecConfigurationException: Can't find a codec for class com.aurick.mongodbmobile.model.Client
+    // Not working for POJO
+    /*public static <T> MongoCollection<T> getCollection(String collectionName, Class<T> tClass) {
+        Log.e(TAG, "getCollection");
+        return getDatabase().getCollection(collectionName, tClass);
+    }*/
+
 }

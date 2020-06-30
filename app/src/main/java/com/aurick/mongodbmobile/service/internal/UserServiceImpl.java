@@ -6,6 +6,8 @@ import com.aurick.mongodbmobile.MongoDBManager;
 import com.aurick.mongodbmobile.model.User;
 import com.aurick.mongodbmobile.service.UserService;
 import com.aurick.mongodbmobile.utils.GsonUtils;
+import com.aurick.mongodbmobile.utils.JacksonUtils;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.gson.reflect.TypeToken;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
@@ -21,23 +23,23 @@ public class UserServiceImpl implements UserService {
 
     private static final String TAG = "UserService";
 
-    private static UserServiceImpl userServiceImpl = null;
+    private static UserServiceImpl userService = null;
 
-    private final MongoCollection<Document> localCollection = MongoDBManager.getCollection("user");
+    private final MongoCollection<Document> userCollection = MongoDBManager.getCollection("user");
 
     private UserServiceImpl() {
     }
 
     public static UserServiceImpl getInstance() {
         Log.e(TAG, "getInstance");
-        if (userServiceImpl == null) {
+        if (userService == null) {
             synchronized (UserServiceImpl.class) {
-                if (userServiceImpl == null) {
-                    userServiceImpl = new UserServiceImpl();
+                if (userService == null) {
+                    userService = new UserServiceImpl();
                 }
             }
         }
-        return userServiceImpl;
+        return userService;
     }
 
     @Override
@@ -49,7 +51,7 @@ public class UserServiceImpl implements UserService {
                 put("email", "aurick@gmail.com");
             }
         };
-        localCollection.insertOne(document);
+        userCollection.insertOne(document);
     }
 
     @Override
@@ -69,7 +71,7 @@ public class UserServiceImpl implements UserService {
 
         Log.e(TAG, "updateUser" + updateDocument.toJson());
 
-        return localCollection.updateOne(filter, updateDocument);
+        return userCollection.updateOne(filter, updateDocument);
     }
 
     @Override
@@ -80,10 +82,12 @@ public class UserServiceImpl implements UserService {
             }
         };
 
-        Document userDoc = localCollection.find(query).first();
+        Document userDoc = userCollection.find(query).first();
+
         if (userDoc == null)
             return null;
-        return GsonUtils.fromJson(userDoc.toJson(), User.class);
+        return JacksonUtils.fromJson(userDoc.toJson(), User.class);
+//        return GsonUtils.fromJson(userDoc.toJson(), User.class);
     }
 
     @Override
@@ -93,16 +97,16 @@ public class UserServiceImpl implements UserService {
                 put("name", name);
             }
         };
-        FindIterable<Document> cursor = localCollection.find(query);
-        return GsonUtils.fromJson(GsonUtils.toJson(cursor.into(new ArrayList<>())), new TypeToken<ArrayList<User>>() {
-        }.getType());
+        FindIterable<Document> cursor = userCollection.find(query);
+        return JacksonUtils.fromJson(JacksonUtils.toJson(cursor.into(new ArrayList<>())), new TypeReference<ArrayList<User>>() {});
+//        return GsonUtils.fromJson(GsonUtils.toJson(cursor.into(new ArrayList<>())), new TypeToken<ArrayList<User>>() {}.getType());
     }
 
     @Override
     public ArrayList<User> getUsers() {
-        FindIterable<Document> cursor = localCollection.find();
-        return GsonUtils.fromJson(GsonUtils.toJson(cursor.into(new ArrayList<>())), new TypeToken<ArrayList<User>>() {
-        }.getType());
+        FindIterable<Document> cursor = userCollection.find();
+        return JacksonUtils.fromJson(JacksonUtils.toJson(cursor.into(new ArrayList<>())), new TypeReference<ArrayList<User>>() {});
+//        return GsonUtils.fromJson(GsonUtils.toJson(cursor.into(new ArrayList<>())), new TypeToken<ArrayList<User>>() {}.getType());
     }
 
     @Override
@@ -112,7 +116,7 @@ public class UserServiceImpl implements UserService {
                 put("_id", new ObjectId(userId));
             }
         };
-        return localCollection.deleteOne(query);
+        return userCollection.deleteOne(query);
     }
 
 }
