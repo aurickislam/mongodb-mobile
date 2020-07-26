@@ -64,13 +64,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void runUserTest() {
-//        userService.createUser();
+        userService.createUser();
 
         ArrayList<User> users = userService.getUsers();
         Log.e(TAG, "@users Gson: " + GsonUtils.toJson(users));
         Log.e(TAG,"@users Jackson: " + JacksonUtils.toJson(users));
 
-        User userById = userService.findUser("5f0f168c79e9c56b8c5b33e3");
+        User userById = userService.findUser("5f1dee62fb61a06b3c4d74fe");
         Log.e(TAG, "runUserTest: userById: " + JacksonUtils.toJson(userById));
 
         if (userById != null) {
