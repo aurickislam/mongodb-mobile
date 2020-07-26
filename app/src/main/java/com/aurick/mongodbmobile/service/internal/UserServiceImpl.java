@@ -62,7 +62,8 @@ public class UserServiceImpl implements UserService {
             }
         };
 
-        Document userDocument = Document.parse(GsonUtils.toJson(user));
+//        Document userDocument = Document.parse(GsonUtils.toJson(user));
+        Document userDocument = Document.parse(JacksonUtils.toJson(user));
         userDocument.remove("_id");
 
         Document updateDocument = new Document().append("$set",
@@ -75,7 +76,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findUserById(String userId) {
+    public User findUser(String userId) {
         Document query = new Document() {
             {
                 put("_id", new ObjectId(userId));

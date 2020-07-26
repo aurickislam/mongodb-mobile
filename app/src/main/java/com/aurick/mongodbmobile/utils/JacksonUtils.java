@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -27,6 +28,8 @@ public class JacksonUtils {
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
+    private static final ObjectWriter prettyMapper;
+
     static {
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:sss'Z'");
@@ -39,7 +42,8 @@ public class JacksonUtils {
             @Override
             public ObjectId deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
 //                Log.e("TAG", "deserialize: ");
-                JsonNode oid = ((JsonNode)p.readValueAsTree()).get("$oid");
+
+                JsonNode oid = ((JsonNode) p.readValueAsTree()).get("$oid");
                 return new ObjectId(oid.asText());
             }
         });
@@ -48,12 +52,14 @@ public class JacksonUtils {
             @Override
             public void serialize(ObjectId value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
 //                Log.e(TAG, "serialize: " + value.toHexString());
-                Document document = new Document() {
+
+                /*Document document = new Document() {
                     {
                         put("$oid", value.toString());
                     }
                 };
-//                gen.writeString(document.toJson());
+                gen.writeString(document.toJson());*/
+
                 gen.writeStartObject();
                 gen.writeStringField("$oid", value.toHexString());
                 gen.writeEndObject();
@@ -61,6 +67,8 @@ public class JacksonUtils {
         });
 
         mapper.registerModule(module);
+
+        prettyMapper = mapper.writerWithDefaultPrettyPrinter();
     }
 
     public static <T> T fromJson(String json, Class<T> classOfT) {
@@ -92,7 +100,7 @@ public class JacksonUtils {
 
     public static String toPrettyJson(Object value) {
         try {
-            return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(value);
+            return prettyMapper.writeValueAsString(value);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }

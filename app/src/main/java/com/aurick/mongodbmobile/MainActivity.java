@@ -12,7 +12,6 @@ import com.aurick.mongodbmobile.service.UserService;
 import com.aurick.mongodbmobile.service.internal.UserServiceImpl;
 import com.aurick.mongodbmobile.utils.GsonUtils;
 import com.aurick.mongodbmobile.utils.JacksonUtils;
-import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 
 import java.util.ArrayList;
@@ -71,10 +70,10 @@ public class MainActivity extends AppCompatActivity {
         Log.e(TAG, "@users Gson: " + GsonUtils.toJson(users));
         Log.e(TAG,"@users Jackson: " + JacksonUtils.toJson(users));
 
-        User userById = userService.findUserById("5eadb28f6494786d26c9fe0a");
+        User userById = userService.findUser("5f0f168c79e9c56b8c5b33e3");
         Log.e(TAG, "runUserTest: userById: " + JacksonUtils.toJson(userById));
 
-        /*if (userById != null) {
+        if (userById != null) {
             userById.setName("Aurick Islam");
             UpdateResult updateResult = userService.updateUser(userById);
             Log.e("@updateResult", String.valueOf(updateResult.getMatchedCount()));
@@ -84,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<User> usersByName = userService.findUsersByName("Aurick Islam");
         Log.e("@usersByName", GsonUtils.toJson(usersByName));
 
-        DeleteResult deleteResult = userService.deleteUser("5e9c73db2a86281d78b666ca");
+        /*DeleteResult deleteResult = userService.deleteUser("5f0f168c79e9c56b8c5b33e3");
         Log.e("@deleteResult", String.valueOf(deleteResult.getDeletedCount()));
 
         ArrayList<User> users1 = userService.getUsers();
