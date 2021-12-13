@@ -12,7 +12,7 @@ public interface UserService {
 
     UpdateResult updateUser(User user);
 
-    User findUserById(String userId);
+    User findUser(String userId);
 
     ArrayList<User> findUsersByName(String name);
 

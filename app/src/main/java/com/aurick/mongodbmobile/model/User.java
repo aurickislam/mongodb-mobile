@@ -1,5 +1,6 @@
 package com.aurick.mongodbmobile.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
 
 import org.bson.types.ObjectId;
@@ -9,6 +10,8 @@ import java.io.Serializable;
 public class User implements Serializable {
 
     @SerializedName("_id")
+    @JsonProperty("_id")
+//    @JsonDeserialize(using = ObjectIdDeserializer.class)
     private ObjectId id;
 
     private String name;
@@ -16,6 +19,15 @@ public class User implements Serializable {
     private Integer age;
 
     private String email;
+
+
+    public ObjectId getId() {
+        return id;
+    }
+
+    public void setId(ObjectId id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;
@@ -39,13 +51,5 @@ public class User implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public ObjectId getId() {
-        return id;
-    }
-
-    public void setId(ObjectId id) {
-        this.id = id;
     }
 }

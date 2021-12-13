@@ -16,26 +16,29 @@ import java.lang.reflect.Type;
 
 public class GsonUtils {
 
-    private static final GsonBuilder gsonBuilder = new GsonBuilder()
-            .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
-            .registerTypeAdapter(ObjectId.class, new JsonSerializer<ObjectId>() {
-                @Override
-                public JsonElement serialize(ObjectId src, Type typeOfSrc, JsonSerializationContext context) {
-//                    return new JsonPrimitive(src.toHexString());
-                    JsonObject jsonObject = new JsonObject();
-                    jsonObject.addProperty("$oid", src.toHexString());
-                    return jsonObject;
-                }
-            })
-            .registerTypeAdapter(ObjectId.class, new JsonDeserializer<ObjectId>() {
-                @Override
-                public ObjectId deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-//                    return new ObjectId(json.getAsString());
-                    return new ObjectId(json.getAsJsonObject().get("$oid").getAsString());
-                }
-            });
+    private static final Gson gson;
 
-    private static final Gson gson = gsonBuilder.create();
+    static {
+        gson = new GsonBuilder()
+                .setDateFormat("yyyy-MM-dd'T'HH:mm:sssZ")
+                .registerTypeAdapter(ObjectId.class, new JsonSerializer<ObjectId>() {
+                    @Override
+                    public JsonElement serialize(ObjectId src, Type typeOfSrc, JsonSerializationContext context) {
+//                        return new JsonPrimitive(src.toHexString());
+                        JsonObject jsonObject = new JsonObject();
+                        jsonObject.addProperty("$oid", src.toHexString());
+                        return jsonObject;
+                    }
+                })
+                .registerTypeAdapter(ObjectId.class, new JsonDeserializer<ObjectId>() {
+                    @Override
+                    public ObjectId deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+//                        return new ObjectId(json.getAsString());
+                        return new ObjectId(json.getAsJsonObject().get("$oid").getAsString());
+                    }
+                })
+                .create();
+    }
 
     private GsonUtils() {
     }

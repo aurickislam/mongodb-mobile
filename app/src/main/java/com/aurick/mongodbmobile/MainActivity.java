@@ -11,7 +11,7 @@ import com.aurick.mongodbmobile.model.User;
 import com.aurick.mongodbmobile.service.UserService;
 import com.aurick.mongodbmobile.service.internal.UserServiceImpl;
 import com.aurick.mongodbmobile.utils.GsonUtils;
-import com.mongodb.client.result.DeleteResult;
+import com.aurick.mongodbmobile.utils.JacksonUtils;
 import com.mongodb.client.result.UpdateResult;
 
 import java.util.ArrayList;
@@ -29,11 +29,10 @@ public class MainActivity extends AppCompatActivity {
 
         final Button button = findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View view) {
                 Log.e(TAG, "Button Click");
-                runTest();
+                runUserTest();
             }
         });
 
@@ -64,28 +63,30 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
     }
 
-    private void runTest() {
+    private void runUserTest() {
         userService.createUser();
 
-        User userById = userService.findUserById("5e9c73db2a86281d78b666ca");
-        Log.e("@userById", GsonUtils.toJson(userById));
+        ArrayList<User> users = userService.getUsers();
+        Log.e(TAG, "@users Gson: " + GsonUtils.toJson(users));
+        Log.e(TAG,"@users Jackson: " + JacksonUtils.toJson(users));
+
+        User userById = userService.findUser("5f1dee62fb61a06b3c4d74fe");
+        Log.e(TAG, "runUserTest: userById: " + JacksonUtils.toJson(userById));
 
         if (userById != null) {
             userById.setName("Aurick Islam");
             UpdateResult updateResult = userService.updateUser(userById);
             Log.e("@updateResult", String.valueOf(updateResult.getMatchedCount()));
-            Log.e("@updateResult", String.valueOf(updateResult.wasAcknowledged()));
             Log.e("@updateResult", String.valueOf(updateResult.getModifiedCount()));
         }
 
         ArrayList<User> usersByName = userService.findUsersByName("Aurick Islam");
         Log.e("@usersByName", GsonUtils.toJson(usersByName));
 
-        DeleteResult deleteResult = userService.deleteUser("5e9c7468e3a34247f459f5e0");
+        /*DeleteResult deleteResult = userService.deleteUser("5f0f168c79e9c56b8c5b33e3");
         Log.e("@deleteResult", String.valueOf(deleteResult.getDeletedCount()));
-        Log.e("@deleteResult", String.valueOf(deleteResult.wasAcknowledged()));
 
-        ArrayList<User> users = userService.getUsers();
-        Log.e("@users", GsonUtils.toJson(users));
+        ArrayList<User> users1 = userService.getUsers();
+        Log.e("@users", GsonUtils.toJson(users1));*/
     }
 }
